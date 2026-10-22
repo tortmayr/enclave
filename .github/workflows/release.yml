@@ -55,7 +55,7 @@ jobs:
   publish:
     needs: [version, assets]
     # Forks carry this file but must not publish with their own secrets.
-    if: ${{ github.repository == 'eclipse-enclave/enclave' }}
+    if: ${{ github.repository == 'tortmayr/enclave' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -95,17 +95,3 @@ jobs:
               "${flags[@]}" \
               artifacts/*
           fi
-
-      # The updater reads releases/latest (a version) and that version's
-      # directory. Pre-releases are published but never become latest.
-      - name: Publish to download.eclipse.org
-        uses: ./.github/actions/publish-downloads
-        with:
-          source: artifacts
-          target: releases/${{ env.VERSION }}
-          immutable: "true"
-          latest: ${{ env.PRERELEASE != 'true' && env.VERSION || '' }}
-          latest-path: releases/latest
-          username: ${{ secrets.SCP_USERNAME }}
-          ssh-key: ${{ secrets.SCP_KEY }}
-          ssh-passphrase: ${{ secrets.SCP_PASSPHRASE }}
